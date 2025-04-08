@@ -12,7 +12,7 @@ type USER struct {
 	registration_date time.Time
 	profile_picture   string
 	age               int
-	Reviews           []REVIEW
+	Reviews           []REVIEW  `gorm:"foreignKey:user_id"`
 	profileUser       []PROFILE `gorm:"foreignKey:user_id"`
 }
 type PROFILE struct {
