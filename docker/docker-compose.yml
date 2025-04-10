@@ -1,0 +1,28 @@
+services:
+  postgres:
+    image: postgres:latest
+    container_name: been_chillin_pg
+    environment:
+      POSTGRES_DB: been_chillin
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: admin
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5430:5432"
+    restart: unless-stopped
+
+  # go-fiber-app:
+  #   container_name: fiber
+  #   platform: linux/arm64
+  #   build:
+  #     context: .  # Assuming Dockerfile is in the same directory as docker-compose.yml
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "8080:8080"
+  #   depends_on:
+  #     - postgres # Ensure postgres is running before go-fiber-app
+  #   restart: unless-stopped
+
+volumes:
+  postgres_data:

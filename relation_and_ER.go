@@ -103,5 +103,4 @@ type MOVIE_SUBTITLE struct {
 
 func main() {
 	//fmt.Println("Hello, Go!")
-
 }
