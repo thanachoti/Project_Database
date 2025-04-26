@@ -16,6 +16,19 @@ DROP TABLE IF EXISTS REVIEW;
 
 DROP TABLE IF EXISTS FAVORITE;
 
+DROP TABLE IF EXISTS WATCH_HISTORY;
+
+CREATE TABLE WATCH_HISTORY (
+    history_id SERIAL PRIMARY KEY,
+    user_id INT REFERENCES "user"(user_id) ON DELETE CASCADE,
+    content_id INT REFERENCES CONTENT(content_id) ON DELETE CASCADE,
+    watched_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    progress INT,
+    language_preference VARCHAR(255),
+    cc_preference VARCHAR(255)
+);
+
+
 CREATE TABLE FAVORITE (
     favorite_id serial PRIMARY KEY,
     user_id int REFERENCES "user"(user_id) ON DELETE CASCADE,

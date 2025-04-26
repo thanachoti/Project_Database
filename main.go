@@ -58,6 +58,8 @@ func main() {
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
 	app.Get("/favorites", handlers.GetAllFavoritesHandler(db))
 	app.Delete("/favorites/:id", handlers.DeleteFavoriteHandler(db))
+	app.Post("/api/watch_history", handlers.CreateWatchHistoryHandler(db))
+	app.Get("/api/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }
