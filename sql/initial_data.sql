@@ -10,6 +10,34 @@ DROP TABLE IF EXISTS LANGUAGE;
 
 DROP TABLE IF EXISTS CATEGORY;
 
+DROP TABLE IF EXISTS "user";
+
+DROP TABLE IF EXISTS REVIEW;
+
+DROP TABLE IF EXISTS FAVORITE;
+
+CREATE TABLE FAVORITE (
+    favorite_id serial PRIMARY KEY,
+    user_id int REFERENCES "user"(user_id) ON DELETE CASCADE,
+    content_id int REFERENCES CONTENT(content_id) ON DELETE CASCADE
+);
+
+CREATE TABLE REVIEW (
+    review_id serial PRIMARY KEY,
+    user_id int REFERENCES user (user_id) ON DELETE CASCADE,
+    content_id int REFERENCES content (content_id) ON DELETE CASCADE
+    rating int,
+    review_text text,
+    review_date timestamp
+);
+
+CREATE TABLE "user" (
+    user_id serial PRIMARY KEY,
+    username varchar(255),
+    email varchar(255),
+    password VARCHAR(255)
+);
+
 CREATE TABLE CONTENT (
     content_id serial PRIMARY KEY,
     title varchar(255),
