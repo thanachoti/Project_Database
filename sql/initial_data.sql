@@ -45,10 +45,14 @@ CREATE TABLE REVIEW (
 );
 
 CREATE TABLE "user" (
-    user_id serial PRIMARY KEY,
-    username varchar(255),
-    email varchar(255),
-    password VARCHAR(255)
+    user_id SERIAL PRIMARY KEY,
+    username VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    subscription VARCHAR(50),
+    registration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    age INT,
+    profile_pic VARCHAR(255)
 );
 
 CREATE TABLE CONTENT (
