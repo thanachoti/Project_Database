@@ -50,7 +50,6 @@ func main() {
 	app.Post("/register", handlers.CreateUserHandler(db))
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
-	app.Post("/profile", handlers.CreateProfileHandler(db))
 	app.Use(auth.JWTMiddleware)
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews", handlers.GetAllReviewsHandler(db))
