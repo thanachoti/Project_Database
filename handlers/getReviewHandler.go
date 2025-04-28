@@ -13,7 +13,7 @@ import (
 // CreateReviewHandler inserts a review into the database
 func CreateReviewHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		review, err := queries.ParseReviewData(c)
+		review, err := queries.PrepareReviewData(c)
 		if err != nil {
 			log.Println("Parse error:", err)
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})

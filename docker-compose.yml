@@ -11,18 +11,28 @@ services:
     ports:
       - "5430:5432"
     restart: unless-stopped
-
-  # go-fiber-app:
-  #   container_name: fiber
-  #   platform: linux/arm64
-  #   build:
-  #     context: .  # Assuming Dockerfile is in the same directory as docker-compose.yml
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "8080:8080"
-  #   depends_on:
-  #     - postgres # Ensure postgres is running before go-fiber-app
-  #   restart: unless-stopped
+  go-fiber-app:
+    container_name: fiber
+    platform: linux/arm64
+    build:
+      context: .  # Assuming Dockerfile is in the same directory as docker-compose.yml
+      dockerfile: Dockerfile
+    ports:
+       - "8080:8080"
+    depends_on:
+       - postgres # Ensure postgres is running before go-fiber-app
+    restart: unless-stopped
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: been_chillin_pgadmin
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: admin
+    ports:
+      - "8081:80"
+    depends_on:
+      - postgres
+    restart: unless-stopped
 
 volumes:
   postgres_data:

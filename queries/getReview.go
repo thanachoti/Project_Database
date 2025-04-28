@@ -9,7 +9,7 @@ import (
 	object "github.com/khemingkapat/been_chillin/objects"
 )
 
-func ParseReviewData(c *fiber.Ctx) (object.Review, error) {
+func PrepareReviewData(c *fiber.Ctx) (object.Review, error) {
 	var review object.Review
 
 	if err := json.Unmarshal(c.Body(), &review); err != nil {
