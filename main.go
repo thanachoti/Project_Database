@@ -6,6 +6,7 @@ import (
 	"log"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/khemingkapat/been_chillin/auth"
 	"github.com/khemingkapat/been_chillin/handlers"
 	_ "github.com/lib/pq"
@@ -42,9 +43,13 @@ func main() {
 	fmt.Println("Hello from march")
 
 	app := fiber.New()
+	app.Use(cors.New(cors.Config{
+		AllowOrigins: "http://localhost:5173",
+		AllowMethods: "*",
+	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
-		return c.SendString("fiber example for dorm management")
+		return c.SendString("how did you even get here ?")
 	})
 
 	app.Post("/register", handlers.CreateUserHandler(db))
