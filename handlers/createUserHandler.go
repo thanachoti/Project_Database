@@ -5,7 +5,7 @@ import (
 	"log" // ✅ เพิ่ม log
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/khemingkapat/been_chillin/auth" // ✅ ต้องใช้สำหรับ EncryptUser
+	// "github.com/khemingkapat/been_chillin/auth" // ✅ ต้องใช้สำหรับ EncryptUser
 	object "github.com/khemingkapat/been_chillin/objects"
 	"github.com/khemingkapat/been_chillin/queries"
 )
@@ -21,10 +21,10 @@ func CreateUserHandler(db *sql.DB) fiber.Handler {
 		}
 
 		// 🔐 เข้ารหัสรหัสผ่าน
-		if err := auth.EncryptUser(user); err != nil {
-			log.Println("❌ Password hashing error:", err)
-			return c.Status(fiber.StatusInternalServerError).SendString("Hashing failed")
-		}
+		// if err := auth.EncryptUser(user); err != nil {
+		// 	log.Println("❌ Password hashing error:", err)
+		// 	return c.Status(fiber.StatusInternalServerError).SendString("Hashing failed")
+		// }
 
 		log.Println("✅ Password hashed:", user.Password)
 
