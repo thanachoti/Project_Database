@@ -13,7 +13,7 @@ import (
 // CreateReviewHandler inserts a review into the database
 func CreateReviewHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		review, err := queries.PrepareReviewData(c)
+		review, err := queries.PrepareReview(c)
 		if err != nil {
 			log.Println("Parse error:", err)
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
@@ -30,30 +30,6 @@ func CreateReviewHandler(db *sql.DB) fiber.Handler {
 		}
 
 		return c.Status(http.StatusCreated).JSON(review)
-	}
-}
-
-// GetAllReviewsHandler retrieves all reviews
-func GetAllReviewsHandler(db *sql.DB) fiber.Handler {
-	return func(c *fiber.Ctx) error {
-		rows, err := db.Query(`SELECT review_id, user_id, content_id, rating, review_text, review_date FROM REVIEW`)
-		if err != nil {
-			log.Println("Query error:", err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch reviews"})
-		}
-		defer rows.Close()
-
-		var reviews []object.Review
-		for rows.Next() {
-			var r object.Review
-			if err := rows.Scan(&r.ReviewID, &r.UserID, &r.ContentID, &r.Rating, &r.ReviewText, &r.ReviewDate); err != nil {
-				log.Println("Row scan error:", err)
-				continue
-			}
-			reviews = append(reviews, r)
-		}
-
-		return c.JSON(reviews)
 	}
 }
 
