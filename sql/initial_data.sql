@@ -108,10 +108,17 @@ INSERT INTO CONTENT (title, description, release_year, duration, content_type, t
     ('Movie E', 'A thriller movie', 2023, 110, 'Movie', 0, 'movie_e.jpg', '', 4.6);
 
 INSERT INTO CATEGORY (category_id, category_name)
-    VALUES (1, 'Action'),
-    (2, 'Drama'),
+    VALUES 
+    (1, 'Action'),
+    (2, 'Adventure'),
     (3, 'Comedy'),
-    (4, 'Thriller');
+    (4, 'Crime'),
+    (5, 'Drama'),
+    (6, 'Fantasy'),
+    (7, 'Horror'),
+    (8, 'Mystery'),
+    (9, 'Sci-Fi'),
+    (10, 'Thriller');
 
 INSERT INTO CONTENT_CATEGORY (content_id, category_id)
     VALUES (1, 1),
@@ -122,12 +129,13 @@ INSERT INTO CONTENT_CATEGORY (content_id, category_id)
     (1, 1),
     (3, 3);
 
-INSERT INTO
-LANGUAGE (language_id, language_name)
-    VALUES (1, 'English'),
-    (2, 'Spanish'),
-    (3, 'French'),
-    (4, 'German');
+INSERT INTO LANGUAGE (language_id, language_name)
+    VALUES
+(1, 'English'),
+(2, 'French'),
+(3, 'Japanese'),
+(4, 'Spanish');
+
 
 INSERT INTO CONTENT_LANGUAGE (content_id, language_id)
     VALUES (1, 1),
