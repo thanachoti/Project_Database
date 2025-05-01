@@ -55,6 +55,8 @@ func main() {
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
 	app.Use(auth.JWTMiddleware)
+	app.Put("/users/:id", handlers.UpdateUserHandler(db))
+	fmt.Println("✅ ROUTE PUT /users/:id registered")
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews", handlers.GetAllReviewsHandler(db))
 	app.Get("/reviews/:id", handlers.GetReviewByIDHandler(db))

@@ -20,16 +20,6 @@ DROP TABLE IF EXISTS WATCH_HISTORY;
 
 -- Create Base Tables (Parent First)
 CREATE TABLE "user" (
-<<<<<<< HEAD
-    user_id serial PRIMARY KEY,
-    username varchar(255) NOT NULL,
-    email varchar(255) UNIQUE NOT NULL,
-    password VARCHAR(255) NOT NULL,
-    subscription varchar(50),
-    registration timestamp DEFAULT CURRENT_TIMESTAMP,
-    age int,
-    profile_pic varchar(255)
-=======
     user_id SERIAL PRIMARY KEY,
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) UNIQUE NOT NULL,
@@ -38,7 +28,6 @@ CREATE TABLE "user" (
     registration TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     age INT,
     profile_pic BYTEA
->>>>>>> 305610c (profilePic)
 );
 
 CREATE TABLE CONTENT (
