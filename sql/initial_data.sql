@@ -54,15 +54,16 @@ LANGUAGE (
     language_name varchar(255)
 );
 
--- Create Related Tables (Child After Parent)
 CREATE TABLE WATCH_HISTORY (
     history_id serial PRIMARY KEY,
     user_id int REFERENCES "user" (user_id) ON DELETE CASCADE,
     content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    watched_timestamp timestamp DEFAULT CURRENT_TIMESTAMP,
     progress timestamp,
     language_preference varchar(255),
     cc_preference varchar(255)
 );
+
 
 CREATE TABLE FAVORITE (
     favorite_id serial PRIMARY KEY,
