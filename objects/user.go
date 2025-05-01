@@ -10,7 +10,7 @@ type User struct {
 	Subscription string    `json:"subscription"`
 	Registration time.Time `json:"registration"`
 	Age          int       `json:"age"`
-	ProfilePic   string    `json:"profile_pic"`
+	ProfilePic   []byte    `json:"-"`
 }
 
 type UserLogin struct {

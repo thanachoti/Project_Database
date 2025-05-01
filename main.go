@@ -40,7 +40,6 @@ func main() {
 	}
 
 	fmt.Println("Successfully connected!")
-	fmt.Println("Hello from march")
 
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
