@@ -6,7 +6,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/khemingkapat/been_chillin/auth"
-	"github.com/khemingkapat/been_chillin/objects"
+	object "github.com/khemingkapat/been_chillin/objects"
 )
 
 func LoginUserHandler(db *sql.DB) fiber.Handler {

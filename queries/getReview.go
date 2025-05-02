@@ -3,6 +3,7 @@ package queries
 import (
 	"encoding/json"
 	"errors"
+	"log"
 	"time"
 
 	"github.com/gofiber/fiber/v2"
@@ -15,7 +16,7 @@ func PrepareReview(c *fiber.Ctx) (object.Review, error) {
 	if err := json.Unmarshal(c.Body(), &review); err != nil {
 		return review, err
 	}
-
+	log.Println("Prepared Review:", review)
 	if review.UserID == 0 || review.ContentID == 0 || review.Rating == 0 || review.ReviewText == "" {
 		return review, errors.New("missing required fields")
 	}

@@ -19,6 +19,7 @@ func CreateReviewHandler(db *sql.DB) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
+		log.Println("Review:", review)
 		query := `INSERT INTO REVIEW (user_id, content_id, rating, review_text, review_date)
 				  VALUES ($1, $2, $3, $4, $5) RETURNING review_id`
 
@@ -33,22 +34,45 @@ func CreateReviewHandler(db *sql.DB) fiber.Handler {
 	}
 }
 
-// GetReviewByIDHandler retrieves a specific review by review_id
-func GetReviewByIDHandler(db *sql.DB) fiber.Handler {
+// GetReviewByContentIDHandler retrieves reviews for a specific content_id
+func GetReviewByContentIDHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id := c.Params("id")
+		// ดึง content_id จากพารามิเตอร์ใน URL
+		contentID := c.Params("content_id")
 
-		var r object.Review
-		err := db.QueryRow(`SELECT review_id, user_id, content_id, rating, review_text, review_date FROM REVIEW WHERE review_id = $1`, id).
-			Scan(&r.ReviewID, &r.UserID, &r.ContentID, &r.Rating, &r.ReviewText, &r.ReviewDate)
+		// สร้างตัวแปรเพื่อเก็บรีวิวทั้งหมดที่ตรงกับ content_id
+		var reviews []object.Review
+
+		// Query ฐานข้อมูลเพื่อค้นหาทุกรีวิวที่ตรงกับ content_id
+		rows, err := db.Query(`
+			SELECT review_id, user_id, content_id, rating, review_text, review_date 
+			FROM REVIEW 
+			WHERE content_id = $1`, contentID)
+
+		// ถ้ามีข้อผิดพลาดในการ query
 		if err != nil {
-			if err == sql.ErrNoRows {
-				return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "review not found"})
-			}
 			log.Println("Query error:", err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch review"})
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch reviews"})
+		}
+		defer rows.Close() // ปิด rows เมื่อเสร็จการใช้งาน
+
+		// ดึงข้อมูลรีวิวจาก rows
+		for rows.Next() {
+			var r object.Review
+			err := rows.Scan(&r.ReviewID, &r.UserID, &r.ContentID, &r.Rating, &r.ReviewText, &r.ReviewDate)
+			if err != nil {
+				log.Println("Error scanning row:", err)
+				return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to process review"})
+			}
+			reviews = append(reviews, r)
 		}
 
-		return c.JSON(r)
+		// ถ้าไม่พบรีวิวที่ตรงกับ content_id
+		if len(reviews) == 0 {
+			return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "no reviews found for this content"})
+		}
+
+		// ส่งผลลัพธ์รีวิวทั้งหมดที่พบ
+		return c.JSON(reviews)
 	}
 }
