@@ -16,7 +16,7 @@ func JWTMiddleware(c *fiber.Ctx) error {
 	}
 
 	// Parse the token from the cookie
-	token, err := jwt.ParseWithClaims(cookie, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
+	token, err := jwt.ParseWithClaims(cookie, jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		// Verify the token's signing method and provide the secret key for validation
 		return []byte(JWTSecretKey), nil
 	})
@@ -27,10 +27,11 @@ func JWTMiddleware(c *fiber.Ctx) error {
 	}
 
 	// Token is valid, add claims to the context
-	_, ok := token.Claims.(*jwt.MapClaims)
+	_, ok := token.Claims.(jwt.MapClaims)
 	if !ok {
 		return c.Status(fiber.StatusUnauthorized).SendString("Invalid token claims")
 	}
+	c.Locals("user", token)
 
 	// Continue to the next handler
 	return c.Next()
