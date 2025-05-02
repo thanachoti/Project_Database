@@ -103,7 +103,7 @@ CREATE TABLE CONTENT_SUBTITLE (
 -- Insert Base Data
 INSERT INTO CONTENT (title, description, release_year, duration, content_type, total_seasons, thumbnail_url, video_url, rating)
 VALUES
-    ('Inception', 'Description of Inception, an exciting and engaging storyline.', 2002, 46, 'TV Show', 5, 'https://example.com/thumbnails/inception.jpg', 'https://https://youtu.be/gQ6cdfiIoiQ?si=SXT3KKa9Y1LM7FXK', 8.5),
+    ('Inception', 'Description of Inception, an exciting and engaging storyline.', 2002, 46, 'TV Show', 5, 'https://example.com/thumbnails/inception.jpg', 'https://youtu.be/gQ6cdfiIoiQ?si=SXT3KKa9Y1LM7FXK', 8.5),
     ('The Matrix', 'A mind-bending sci-fi adventure exploring simulated reality.', 1999, 136, 'Movie', 0, 'https://example.com/thumbnails/matrix.jpg', 'https://youtu.be/Qobz4DZ_ofs?si=a3MHz8KU_E1o0nWp', 8.7),
     ('Stranger Things', 'A supernatural mystery involving a group of kids in the 80s.', 2016, 50, 'TV Show', 4, 'https://example.com/thumbnails/stranger_things.jpg', 'https://youtu.be/KM2XiKcYJ10?si=GT5fC9M5nj3zuUjF', 8.8),
     ('Interstellar', 'A team of explorers travel through a wormhole in space.', 2014, 169, 'Movie', 0, 'https://example.com/thumbnails/interstellar.jpg', 'https://youtu.be/kfQW2orL0hg?si=KTT61bnmKw3753yp', 8.6),
@@ -153,8 +153,10 @@ INSERT INTO CONTENT_CATEGORY (content_id, category_id)
     (3, 3),
     (4, 2),
     (5, 4),
-    (1, 1),
-    (3, 3);
+    (1, 2),
+    (3, 4),
+    (6,10),(7,9),(8,8),(9,7),(10,6),(11,5),(12,4),(13,3),(14,2),(15,1),(16,10),(17,9),(18,8),(19,7),
+    (20,6),(21,5),(22,4),(23,3),(24,2),(25,1),(26,10),(27,9),(28,8),(29,7),(30,6);
 
 INSERT INTO LANGUAGE (language_id, language_name)
     VALUES
@@ -174,7 +176,9 @@ INSERT INTO CONTENT_LANGUAGE (content_id, language_id)
     (2, 3),
     (3, 1),
     (4, 3),
-    (5, 1);
+    (5, 1),
+    (6,1),(7,2),(8,3),(9,4),(10,1),(11,2),(12,3),(13,4),(14,1),(15,2),(16,3),
+    (17,4),(18,1),(19,2),(20,3),(21,4),(22,1),(23,2),(24,3),(25,4),(26,1),(27,2),(28,3),(29,4),(30,1);
 
 INSERT INTO CONTENT_SUBTITLE (content_id, language_id)
     VALUES (1, 1),
@@ -186,4 +190,6 @@ INSERT INTO CONTENT_SUBTITLE (content_id, language_id)
     (2, 3),
     (3, 1),
     (4, 1),
-    (5, 2);
+    (5, 2),
+    (6,4),(7,3),(8,2),(9,1),(10,4),(11,3),(12,2),(13,1),(14,4),(15,3),(16,2),(17,1),(18,4),(19,3),(20,2),
+    (21,1),(22,4),(23,3),(24,2),(25,1),(26,4),(27,3),(28,2),(29,1),(30,4);
