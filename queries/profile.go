@@ -4,12 +4,11 @@ import (
 	"database/sql"
 )
 
-func GetUserByID(db *sql.DB, userID int) (email, name, profilePic string, err error) {
+func GetUserByID(db *sql.DB, userID int) (email, username string, profilePic string, err error) {
 	err = db.QueryRow(`
-		SELECT email, name, profile_pic
+		SELECT email, username, profile_pic
 		FROM "user"
 		WHERE user_id = $1
-	`, userID).Scan(&email, &name, &profilePic)
-
+	`, userID).Scan(&email, &username, &profilePic)
 	return
 }
