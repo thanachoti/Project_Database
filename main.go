@@ -55,6 +55,7 @@ func main() {
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
 	app.Use(auth.JWTMiddleware)
+	app.Get("/users/:id", handlers.GetCurrentUserHandler(db))
 	app.Put("/users/:id", handlers.UpdateUserHandler(db))
 	fmt.Println("✅ ROUTE PUT /users/:id registered")
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
@@ -62,8 +63,8 @@ func main() {
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
 	app.Get("/favorites", handlers.GetFavoritesByUserHandler(db))
 	app.Delete("/favorites/:id", handlers.DeleteFavoriteHandler(db))
-	app.Post("/api/watch_history", handlers.CreateWatchHistoryHandler(db))
-	app.Get("/api/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
+	app.Post("/watch_history", handlers.CreateWatchHistoryHandler(db))
+	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }

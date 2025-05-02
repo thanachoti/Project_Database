@@ -1,7 +1,7 @@
 package auth
 
 import (
-	"github.com/khemingkapat/been_chillin/objects"
+	object "github.com/khemingkapat/been_chillin/objects"
 	"golang.org/x/crypto/bcrypt"
 )
 
