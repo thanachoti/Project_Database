@@ -11,7 +11,7 @@ import (
 // GetFavoritesByUserHandler retrieves favorites for a specific user
 func GetFavoritesByUserHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		userID := c.Query("user_id")
+		userID := c.Params("user_id")
 		if userID == "" {
 			return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{"error": "missing user_id parameter"})
 		}
