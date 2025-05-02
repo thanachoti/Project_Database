@@ -4,25 +4,39 @@ import (
 	"bytes"
 	"database/sql"
 	"io"
+	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	object "github.com/khemingkapat/been_chillin/objects"
 	"github.com/khemingkapat/been_chillin/queries"
 )
 
 func UpdateUserHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id := c.Params("id")
-		user := new(object.User)
+		fields := map[string]interface{}{}
 
-		user.UserName = c.FormValue("username")
-		user.Email = c.FormValue("email")
-		user.Subscription = c.FormValue("subscription")
-		user.Age, _ = strconv.Atoi(c.FormValue("age"))
+		// ตรวจ username
+		if v := c.FormValue("username"); v != "" {
+			fields["username"] = v
+		}
+		if v := c.FormValue("email"); v != "" {
+			fields["email"] = v
+		}
+		if v := c.FormValue("subscription"); v != "" {
+			fields["subscription"] = v
+		}
+		if v := c.FormValue("age"); v != "" {
+			if age, err := strconv.Atoi(v); err == nil {
+				fields["age"] = age
+			} else {
+				log.Println("⚠️ age format invalid:", err)
+				return c.Status(400).SendString("Invalid age format")
+			}
+		}
 
+		// แนบ profile_pic ถ้ามี
 		file, err := c.FormFile("profile_pic")
-		if err == nil {
+		if err == nil && file != nil {
 			src, err := file.Open()
 			if err != nil {
 				return c.Status(500).SendString("Open file error")
@@ -33,11 +47,13 @@ func UpdateUserHandler(db *sql.DB) fiber.Handler {
 			if _, err := io.Copy(buf, src); err != nil {
 				return c.Status(500).SendString("Copy file error")
 			}
-			user.ProfilePic = buf.Bytes()
+			fields["profile_pic"] = buf.Bytes()
 		}
 
-		err = queries.UpdateUser(db, user, id)
+		err = queries.UpdateUserFlexible(db, c.Params("user_id"), fields)
+
 		if err != nil {
+			log.Println("❌ UpdateUserFlexible error:", err)
 			return c.Status(500).SendString("Update failed")
 		}
 
