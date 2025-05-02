@@ -11,7 +11,7 @@ import (
 // DeleteFavoriteHandler deletes a favorite by id
 func DeleteFavoriteHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		id := c.Params("id")
+		id := c.Params("user_id")
 
 		res, err := db.Exec(`DELETE FROM FAVORITE WHERE favorite_id = $1`, id)
 		if err != nil {
