@@ -35,10 +35,10 @@ func GetCurrentUserHandler(db *sql.DB) fiber.Handler {
 		// ❹ query ข้อมูลผู้ใช้จากฐานข้อมูล
 		var user object.User
 		err = db.QueryRow(`
-			SELECT user_id, username, email, subscription, registration, age
+			SELECT user_id, username, email, subscription, registration, age, profile_pic
 			FROM "user"
 			WHERE user_id = $1
-		`, userIDFromParam).Scan(&user.UserID, &user.UserName, &user.Email, &user.Subscription, &user.Registration, &user.Age)
+		`, userIDFromParam).Scan(&user.UserID, &user.UserName, &user.Email, &user.Subscription, &user.Registration, &user.Age, &user.ProfilePic)
 		profilePictureBase64 := ""
 		if len(user.ProfilePic) > 0 {
 			profilePictureBase64 = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(user.ProfilePic)
