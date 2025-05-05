@@ -2,7 +2,10 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/base64"
+	"log"
 	"strconv"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/khemingkapat/been_chillin/auth"
@@ -36,11 +39,29 @@ func GetCurrentUserHandler(db *sql.DB) fiber.Handler {
 			FROM "user"
 			WHERE user_id = $1
 		`, userIDFromParam).Scan(&user.UserID, &user.UserName, &user.Email, &user.Subscription, &user.Registration, &user.Age)
+		profilePictureBase64 := ""
+		if len(user.ProfilePic) > 0 {
+			profilePictureBase64 = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(user.ProfilePic)
+			log.Println("📦 Final profilePictureBase64:", profilePictureBase64[:50], "... (truncated)")
+		} else {
+			log.Println("⚠️ No profile picture found (user.ProfilePic is empty)")
+		}
 
 		if err != nil {
 			return c.Status(404).JSON(fiber.Map{"error": "user not found"})
 		}
 
-		return c.JSON(user)
+		return c.JSON(fiber.Map{
+			"message": "Login Succeeded",
+			"user": fiber.Map{
+				"userID":         user.UserID,
+				"username":       user.UserName,
+				"email":          user.Email,
+				"subscription":   user.Subscription,
+				"age":            user.Age,
+				"registration":   user.Registration.Format(time.RFC3339),
+				"profilePicture": profilePictureBase64,
+			},
+		})
 	}
 }
