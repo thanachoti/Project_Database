@@ -43,18 +43,21 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins: "http://localhost:5173",
-		AllowMethods: "*",
+		AllowOrigins:     "http://localhost:5173",
+		AllowMethods:     "*",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		AllowCredentials: true,
+		ExposeHeaders:    "Set-Cookie",
 	}))
 
 	app.Get("/", func(c *fiber.Ctx) error {
 		return c.SendString("how did you even get here ?")
 	})
-
 	app.Post("/register", handlers.CreateUserHandler(db))
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
 	app.Use(auth.JWTMiddleware)
+	app.Put("/users/profile_picture", auth.JWTMiddleware, handlers.UploadProfilePictureHandler(db))
 	app.Get("/users/:user_id", auth.JWTMiddleware, handlers.GetCurrentUserHandler(db))
 	app.Put("/users/:user_id", handlers.UpdateUserHandler(db))
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
