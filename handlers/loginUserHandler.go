@@ -60,8 +60,8 @@ func LoginUserHandler(db *sql.DB) fiber.Handler {
 
 		profilePictureBase64 := ""
 		if len(user.ProfilePic) > 0 {
-			profilePictureBase64 = base64.StdEncoding.EncodeToString(user.ProfilePic)
-			log.Println("✅ Base64 encoded profile picture:", profilePictureBase64[:50], "... (truncated)")
+			profilePictureBase64 = "data:image/jpeg;base64," + base64.StdEncoding.EncodeToString(user.ProfilePic)
+			log.Println("📦 Final profilePictureBase64:", profilePictureBase64[:50], "... (truncated)")
 		} else {
 			log.Println("⚠️ No profile picture found (user.ProfilePic is empty)")
 		}
