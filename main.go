@@ -60,6 +60,7 @@ func main() {
 	app.Put("/users/profile_picture", auth.JWTMiddleware, handlers.UploadProfilePictureHandler(db))
 	app.Get("/users/:user_id", auth.JWTMiddleware, handlers.GetCurrentUserHandler(db))
 	app.Put("/users/:user_id", auth.JWTMiddleware, handlers.UpdateUserProfileHandler(db))
+	app.Post("/users/change-password", auth.JWTMiddleware, handlers.ChangePasswordHandler(db))
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
