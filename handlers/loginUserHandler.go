@@ -41,7 +41,6 @@ func LoginUserHandler(db *sql.DB) fiber.Handler {
 			&user.Age,
 			&user.ProfilePic,
 		)
-
 		if err != nil {
 			return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 				"error": "failed to fetch user info",
@@ -53,8 +52,9 @@ func LoginUserHandler(db *sql.DB) fiber.Handler {
 			Name:     "jwt",
 			Value:    token,
 			Expires:  time.Now().Add(time.Hour * 3),
-			HTTPOnly: true,
-			SameSite: "lax",
+			HTTPOnly: false,
+			Secure:   false,
+			SameSite: "None",
 			Path:     "/",
 		})
 
