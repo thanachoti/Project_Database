@@ -65,7 +65,7 @@ func main() {
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
 	app.Get("/favorites/:user_id", handlers.GetFavoritesByUserHandler(db))
-	app.Delete("/favorites/:user_id", handlers.DeleteFavoriteHandler(db))
+	app.Delete("/favorites/:content_id", handlers.DeleteFavoriteHandler(db))
 	app.Post("/watch_history", handlers.CreateWatchHistoryHandler(db))
 	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 	app.Get("/update_subscription", handlers.UpdateSubscriptionHandler(db))
