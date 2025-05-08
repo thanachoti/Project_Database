@@ -3,6 +3,7 @@ package handlers
 import (
 	"database/sql"
 	"io"
+	"log"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/khemingkapat/been_chillin/auth"
@@ -10,6 +11,8 @@ import (
 
 func UploadProfilePictureHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
+		username := c.FormValue("username")
+		email := c.FormValue("email")
 		userID, err := auth.ExtractUserID(c)
 		if err != nil {
 			return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
@@ -24,6 +27,7 @@ func UploadProfilePictureHandler(db *sql.DB) fiber.Handler {
 		defer src.Close()
 
 		imgBytes, _ := io.ReadAll(src)
+		log.Println("🧾 ID:", userID, "Name:", username, "Email:", email)
 
 		_, err = db.Exec(`UPDATE "user" SET profile_pic = $1 WHERE user_id = $2`, imgBytes, userID)
 		if err != nil {
