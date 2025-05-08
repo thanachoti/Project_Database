@@ -1,64 +1,45 @@
 package handlers
 
 import (
-	"bytes"
 	"database/sql"
-	"io"
-	"log"
 	"strconv"
 
 	"github.com/gofiber/fiber/v2"
-	"github.com/khemingkapat/been_chillin/queries"
+	"github.com/khemingkapat/been_chillin/auth"
 )
 
-func UpdateUserHandler(db *sql.DB) fiber.Handler {
+func UpdateUserProfileHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		fields := map[string]interface{}{}
-
-		// ตรวจ username
-		if v := c.FormValue("username"); v != "" {
-			fields["username"] = v
-		}
-		if v := c.FormValue("email"); v != "" {
-			fields["email"] = v
-		}
-		if v := c.FormValue("subscription"); v != "" {
-			fields["subscription"] = v
-		}
-		if v := c.FormValue("age"); v != "" {
-			if age, err := strconv.Atoi(v); err == nil {
-				fields["age"] = age
-			} else {
-				log.Println("⚠️ age format invalid:", err)
-				return c.Status(400).SendString("Invalid age format")
-			}
+		// 1. ดึง userID จาก JWT (login)
+		jwtUserID, err := auth.ExtractUserID(c)
+		if err != nil {
+			return c.Status(401).JSON(fiber.Map{"error": "unauthorized"})
 		}
 
-		// แนบ profile_pic ถ้ามี
-		file, err := c.FormFile("profile_pic")
-		if err == nil && file != nil {
-			src, err := file.Open()
-			if err != nil {
-				return c.Status(500).SendString("Open file error")
-			}
-			defer src.Close()
+		// 2. ดึง user_id จาก URL parameter
+		paramUserID := c.Params("user_id")
 
-			buf := new(bytes.Buffer)
-			if _, err := io.Copy(buf, src); err != nil {
-				return c.Status(500).SendString("Copy file error")
-			}
-			fields["profile_pic"] = buf.Bytes()
+		// 3. ตรวจสอบว่าเป็นเจ้าของจริงหรือไม่
+		if strconv.Itoa(jwtUserID) != paramUserID {
+			return c.Status(403).JSON(fiber.Map{"error": "forbidden"})
 		}
 
-		err = queries.UpdateUserFlexible(db, c.Params("user_id"), fields)
+		// 4. ดึงข้อมูลจากฟอร์ม
+		username := c.FormValue("username")
+		email := c.FormValue("email")
+		subscription := c.FormValue("subscription")
+
+		// 5. อัปเดต DB
+		_, err = db.Exec(`
+			UPDATE "user" 
+			SET username = $1, email = $2, subscription = $3 
+			WHERE user_id = $4
+		`, username, email, subscription, jwtUserID)
 
 		if err != nil {
-			log.Println("❌ UpdateUserFlexible error:", err)
-			return c.Status(500).SendString("Update failed")
+			return c.Status(500).JSON(fiber.Map{"error": "update failed"})
 		}
 
-		return c.JSON(fiber.Map{
-			"message": "User updated successfully",
-		})
+		return c.JSON(fiber.Map{"message": "Profile updated successfully"})
 	}
 }
