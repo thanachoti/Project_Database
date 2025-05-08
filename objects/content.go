@@ -14,4 +14,5 @@ type Content struct {
 	Languages    []string // List of available languages
 	Subtitles    []string // List of available subtitles
 	Categories   []string // List of categories
+	Director     string
 }
