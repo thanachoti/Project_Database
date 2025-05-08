@@ -19,10 +19,17 @@ func CreateWatchHistoryHandler(db *sql.DB) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
+		// Use a single upsert query for PostgreSQL
 		query := `
-			INSERT INTO WATCH_HISTORY (user_id, content_id, watched_timestamp, progress, language_preference, cc_preference)
-			VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4, $5)
-			RETURNING history_id, watched_timestamp
+			INSERT INTO WATCH_HISTORY (
+				user_id, content_id, watched_timestamp, progress, language_preference, cc_preference
+			) VALUES ($1, $2, CURRENT_TIMESTAMP, $3, $4, $5)
+			ON CONFLICT (user_id, content_id) DO UPDATE 
+			SET watched_timestamp = CURRENT_TIMESTAMP,
+				progress = COALESCE($3, WATCH_HISTORY.progress),
+				language_preference = COALESCE($4, WATCH_HISTORY.language_preference),
+				cc_preference = COALESCE($5, WATCH_HISTORY.cc_preference)
+			RETURNING history_id, user_id, content_id, watched_timestamp, progress, language_preference, cc_preference
 		`
 
 		err = db.QueryRow(query,
@@ -31,14 +38,25 @@ func CreateWatchHistoryHandler(db *sql.DB) fiber.Handler {
 			history.Progress,
 			history.LanguagePreference,
 			history.CcPreference,
-		).Scan(&history.HistoryID, &history.Progress)
-
+		).Scan(
+			&history.HistoryID,
+			&history.UserID,
+			&history.ContentID,
+			&history.WatchedTimestamp,
+			&history.Progress,
+			&history.LanguagePreference,
+			&history.CcPreference,
+		)
 		if err != nil {
 			log.Println("DB error:", err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to insert watch history"})
+			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to create/update watch history"})
 		}
 
-		return c.Status(http.StatusCreated).JSON(history)
+		// Determine if this was a create or update for status code
+		status := http.StatusCreated // Default to created
+		// You could check if the historyID already existed to determine if this was an update
+
+		return c.Status(status).JSON(history)
 	}
 }
 

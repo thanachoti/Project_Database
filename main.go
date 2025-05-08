@@ -44,7 +44,7 @@ func main() {
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
 		AllowOrigins:     "http://localhost:5173",
-		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS",
+		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
 		ExposeHeaders:    "Set-Cookie",
@@ -65,9 +65,10 @@ func main() {
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
 	app.Get("/favorites/:user_id", handlers.GetFavoritesByUserHandler(db))
-	app.Delete("/favorites/:user_id", handlers.DeleteFavoriteHandler(db))
+	app.Delete("/favorites/:content_id", handlers.DeleteFavoriteHandler(db))
 	app.Post("/watch_history", handlers.CreateWatchHistoryHandler(db))
 	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
+	app.Get("/update_subscription", handlers.UpdateSubscriptionHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }
