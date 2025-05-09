@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"database/sql"
+	"encoding/base64"
 	"log"
 	"net/http"
 
@@ -19,60 +20,94 @@ func CreateReviewHandler(db *sql.DB) fiber.Handler {
 			return c.Status(http.StatusBadRequest).JSON(fiber.Map{"error": err.Error()})
 		}
 
-		log.Println("Review:", review)
-		query := `INSERT INTO REVIEW (user_id, content_id, rating, review_text, review_date)
-				  VALUES ($1, $2, $3, $4, $5) RETURNING review_id`
+		log.Println("Review input:", review)
 
-		err = db.QueryRow(query, review.UserID, review.ContentID, review.Rating, review.ReviewText, review.ReviewDate).
+		// ✅ 1. Insert review และดึง review_id กลับมา
+		insertQuery := `
+			INSERT INTO REVIEW (user_id, content_id, rating, review_text, review_date)
+			VALUES ($1, $2, $3, $4, $5)
+			RETURNING review_id
+		`
+		err = db.QueryRow(insertQuery, review.UserID, review.ContentID, review.Rating, review.ReviewText, review.ReviewDate).
 			Scan(&review.ReviewID)
 		if err != nil {
-			log.Println("DB error:", err)
+			log.Println("DB insert error:", err)
 			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to insert review"})
 		}
 
+		// ✅ 2. ดึง username จาก user_id
+		err = db.QueryRow(`SELECT username FROM "user" WHERE user_id = $1`, review.UserID).
+			Scan(&review.Username)
+		if err != nil {
+			log.Println("DB username fetch error:", err)
+			// ถ้าหาไม่เจอให้ fallback เป็น "User"
+			review.Username = "User"
+		}
+
+		log.Println("✅ Review inserted with username:", review.Username)
+
+		// ✅ 3. ส่งกลับ review (พร้อม username)
 		return c.Status(http.StatusCreated).JSON(review)
 	}
 }
 
 // GetReviewByContentIDHandler retrieves reviews for a specific content_id
+// GetReviewByContentIDHandler retrieves reviews for a specific content_id
 func GetReviewByContentIDHandler(db *sql.DB) fiber.Handler {
 	return func(c *fiber.Ctx) error {
-		// ดึง content_id จากพารามิเตอร์ใน URL
 		contentID := c.Params("content_id")
-
-		// สร้างตัวแปรเพื่อเก็บรีวิวทั้งหมดที่ตรงกับ content_id
 		var reviews []object.Review
 
-		// Query ฐานข้อมูลเพื่อค้นหาทุกรีวิวที่ตรงกับ content_id
 		rows, err := db.Query(`
-			SELECT review_id, user_id, content_id, rating, review_text, review_date 
-			FROM REVIEW 
-			WHERE content_id = $1`, contentID)
+			SELECT 
+				r.review_id, r.user_id, u.username, u.profile_pic, 
+				r.content_id, r.rating, r.review_text, r.review_date
+			FROM review r
+			JOIN "user" u ON r.user_id = u.user_id
+			WHERE r.content_id = $1
+			ORDER BY r.review_date DESC
+		`, contentID)
 
-		// ถ้ามีข้อผิดพลาดในการ query
 		if err != nil {
-			log.Println("Query error:", err)
-			return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to fetch reviews"})
+			log.Println("❌ Query error:", err)
+			return c.Status(500).JSON(fiber.Map{"error": "failed to fetch reviews"})
 		}
-		defer rows.Close() // ปิด rows เมื่อเสร็จการใช้งาน
+		defer rows.Close()
 
-		// ดึงข้อมูลรีวิวจาก rows
 		for rows.Next() {
 			var r object.Review
-			err := rows.Scan(&r.ReviewID, &r.UserID, &r.ContentID, &r.Rating, &r.ReviewText, &r.ReviewDate)
+			var profilePicBytes []byte
+
+			err := rows.Scan(
+				&r.ReviewID,
+				&r.UserID,
+				&r.Username,
+				&profilePicBytes,
+				&r.ContentID,
+				&r.Rating,
+				&r.ReviewText,
+				&r.ReviewDate,
+			)
 			if err != nil {
-				log.Println("Error scanning row:", err)
-				return c.Status(http.StatusInternalServerError).JSON(fiber.Map{"error": "failed to process review"})
+				log.Println("❌ Scan error:", err)
+				return c.Status(500).JSON(fiber.Map{"error": "failed to process review"})
 			}
+
+			// ✅ แปลง profile_pic เป็น base64 ถ้ามี
+			if len(profilePicBytes) > 0 {
+				base64Str := base64.StdEncoding.EncodeToString(profilePicBytes)
+				r.ProfilePic = "data:image/png;base64," + base64Str
+			} else {
+				r.ProfilePic = ""
+			}
+
 			reviews = append(reviews, r)
 		}
 
-		// ถ้าไม่พบรีวิวที่ตรงกับ content_id
 		if len(reviews) == 0 {
-			return c.Status(http.StatusNotFound).JSON(fiber.Map{"error": "no reviews found for this content"})
+			return c.Status(404).JSON(fiber.Map{"error": "no reviews found"})
 		}
 
-		// ส่งผลลัพธ์รีวิวทั้งหมดที่พบ
 		return c.JSON(reviews)
 	}
 }

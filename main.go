@@ -43,7 +43,7 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5173",
+		AllowOrigins:     "http://localhost:5174",
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
@@ -63,6 +63,7 @@ func main() {
 	app.Post("/users/change-password", auth.JWTMiddleware, handlers.ChangePasswordHandler(db))
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
+	app.Delete("/reviews/:review_id", handlers.DeleteReviewHandler(db))
 	app.Post("/favorites", handlers.CreateFavoriteHandler(db))
 	app.Get("/favorites/:user_id", handlers.GetFavoritesByUserHandler(db))
 	app.Delete("/favorites/:content_id", handlers.DeleteFavoriteHandler(db))
