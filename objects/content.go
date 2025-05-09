@@ -1,5 +1,7 @@
 package object
 
+import "github.com/lib/pq"
+
 type Content struct {
 	ContentID    int
 	Title        string
@@ -11,8 +13,8 @@ type Content struct {
 	ThumbnailURL string
 	VideoURL     string
 	Rating       float64
-	Languages    []string // List of available languages
-	Subtitles    []string // List of available subtitles
-	Categories   []string // List of categories
 	Director     string
+	Languages    pq.StringArray
+	Subtitles    pq.StringArray
+	Categories   pq.StringArray
 }
