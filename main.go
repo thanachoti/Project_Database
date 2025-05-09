@@ -56,11 +56,12 @@ func main() {
 	app.Post("/register", handlers.CreateUserHandler(db))
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
+
 	app.Use(auth.JWTMiddleware)
-	app.Put("/users/profile_picture", auth.JWTMiddleware, handlers.UploadProfilePictureHandler(db))
-	app.Get("/users/:user_id", auth.JWTMiddleware, handlers.GetCurrentUserHandler(db))
-	app.Put("/users/:user_id", auth.JWTMiddleware, handlers.UpdateUserProfileHandler(db))
-	app.Post("/users/change-password", auth.JWTMiddleware, handlers.ChangePasswordHandler(db))
+	app.Put("/users/profile_picture", handlers.UploadProfilePictureHandler(db))
+	app.Get("/users/:user_id", handlers.GetCurrentUserHandler(db))
+	app.Put("/users/:user_id", handlers.UpdateUserProfileHandler(db))
+	app.Post("/users/change-password", handlers.ChangePasswordHandler(db))
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
 	app.Delete("/reviews/:review_id", handlers.DeleteReviewHandler(db))
@@ -70,6 +71,10 @@ func main() {
 	app.Post("/watch_history", handlers.CreateWatchHistoryHandler(db))
 	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 	app.Get("/update_subscription", handlers.UpdateSubscriptionHandler(db))
+
+	app.Get("/hi_admin", auth.AdminOnlyMiddleware, func(c *fiber.Ctx) error {
+		return c.SendString("hi_admin")
+	})
 
 	log.Fatal(app.Listen(":8080"))
 }
