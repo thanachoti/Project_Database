@@ -72,9 +72,11 @@ func main() {
 	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 	app.Get("/update_subscription", handlers.UpdateSubscriptionHandler(db))
 
-	app.Get("/hi_admin", auth.AdminOnlyMiddleware, func(c *fiber.Ctx) error {
-		return c.SendString("hi_admin")
+	app.Use(auth.AdminOnlyMiddleware)
+	app.Get("/hi_admin", func(c *fiber.Ctx) error {
+		return c.SendString("Hello admin")
 	})
+	app.Post("/contents", handlers.CreateContentHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }
