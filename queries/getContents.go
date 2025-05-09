@@ -11,7 +11,7 @@ import (
 func GetContents(db *sql.DB) ([]object.Content, error) {
 	//  the SQL query
 	query := `SELECT content_id, title, description, release_year, duration, content_type, 
-              total_seasons, thumbnail_url, video_url, rating 
+              total_seasons, thumbnail_url, video_url, rating,director 
               FROM CONTENT`
 
 	// Use db.Query to execute the query and get a result set (rows).
@@ -39,6 +39,7 @@ func GetContents(db *sql.DB) ([]object.Content, error) {
 			&content.ThumbnailURL,
 			&content.VideoURL,
 			&content.Rating,
+			&content.Director,
 		)
 		if err != nil {
 			return nil, fmt.Errorf("error scanning row: %w", err)
@@ -63,6 +64,7 @@ func GetContents(db *sql.DB) ([]object.Content, error) {
 
 		contents = append(contents, content)
 	}
+	fmt.Println(contents[0])
 
 	// Check for any errors that occurred during the iteration with rows.Err().
 	if err = rows.Err(); err != nil {
