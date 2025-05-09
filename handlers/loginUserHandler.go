@@ -53,7 +53,7 @@ func LoginUserHandler(db *sql.DB) fiber.Handler {
 			Name:     "jwt",
 			Value:    token,
 			Expires:  time.Now().Add(time.Hour * 3),
-			HTTPOnly: true,
+			HTTPOnly: false,
 			SameSite: "lax",
 			Path:     "/",
 		})

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"log"
 
-	"github.com/khemingkapat/been_chillin/objects"
+	object "github.com/khemingkapat/been_chillin/objects"
 )
 
 func GetContents(db *sql.DB) ([]object.Content, error) {
