@@ -42,7 +42,8 @@ CREATE TABLE CONTENT (
     video_url varchar(255),
     rating float CHECK (rating >= 0 AND rating <= 10),
     director varchar(255),
-    CHECK ((content_type = 'TV Show' AND total_seasons IS NOT NULL AND total_seasons > 0) OR (content_type = 'Movie' AND total_seasons = 0))
+    CHECK ((content_type = 'TV Show' AND total_seasons IS NOT NULL AND total_seasons > 0) OR (content_type = 'Movie' AND total_seasons = 0)),
+    UNIQUE (title, release_year, content_type, director)
 );
 
 CREATE TABLE CATEGORY (
@@ -107,6 +108,9 @@ CREATE TABLE CONTENT_SUBTITLE (
     UNIQUE (content_id, language_id)
 );
 
+INSERT INTO "user" (username, email, PASSWORD, subscription, age, ROLE)
+    VALUES ('admin', 'admin@example.com', '$2a$10$V2z/xMaErmhg0eYMhDedruY32RYyT9FjUKsV.MCCn1ZLfpmHPBZJ6', 'Premium', 30, 'Admin');
+
 INSERT INTO CONTENT (title, description, release_year, duration, content_type, total_seasons, thumbnail_url, video_url, rating, director)
     VALUES ('Inception', 'Description of Inception, an exciting and engaging storyline.', 2002, 46, 'TV Show', 5, 'https://encrypted-tbn3.gstatic.com/images?q=tbn:ANd9GcQovCe0H45fWwAtV31ajOdXRPTxSsMQgPIQ3lcZX_mAW0jXV3kH', 'https://youtu.be/gQ6cdfiIoiQ?si=SXT3KKa9Y1LM7FXK', 8.5, 'Christopher Nolan'),
     ('The Matrix', 'A mind-bending sci-fi adventure exploring simulated reality.', 1999, 136, 'Movie', 0, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQCWXVvfvZR3oe7PCMM0exwV0dObOTKvLfSM-bjvKpQ1VegKXuCtq6aBrxqbIgUNxMbfavy', 'https://youtu.be/Qobz4DZ_ofs?si=a3MHz8KU_E1o0nWp', 8.7, 'Lana Wachowski, Lilly Wachowski'),
@@ -137,20 +141,20 @@ INSERT INTO CONTENT (title, description, release_year, duration, content_type, t
     ('House of the Dragon', 'Prequel to Game of Thrones about House Targaryen.', 2022, 60, 'TV Show', 1, 'https://m.media-amazon.com/images/M/MV5BM2QzMGVkNjUtN2Y4Yi00ODMwLTg3YzktYzUxYjJlNjFjNDY1XkEyXkFqcGc@._V1_.jpg', 'https://youtu.be/Q0zMgGZCkpk?si=waxBOj2enlgGmB0R', 8.6, 'Various Directors'),
     ('Ford v Ferrari', 'Rivalry between Ford and Ferrari at Le Mans 1966.', 2019, 152, 'Movie', 0, 'https://m.media-amazon.com/images/M/MV5BOTBjNTEyNjYtYjdkNi00YzE5LTljYzUtZjVlYmYwZmJmZWYxXkEyXkFqcGc@._V1_.jpg', 'https://youtu.be/VUmmhslxg9s?si=tYVQg2B1ffE8GCwA', 8.1, 'James Mangold'),
     ('Chernobyl', 'The true story of the 1986 nuclear disaster.', 2019, 65, 'TV Show', 1, 'https://upload.wikimedia.org/wikipedia/en/a/a7/Chernobyl_2019_Miniseries.jpg', 'https://youtu.be/Iaj_T7k8FfE?si=iBeJIVKf9zz5vt9g', 9.4, 'Johan Renck'),
-    ('Bohemian Rhapsody', 'A biographical film about QueenΓò¼├┤Γö£ΓûôΓö¼Γò¥╬ô├╢┬ú╬ô├╢├▒Γò¼├┤Γö£ΓòóΓö¼├║╬ô├╢┬úΓö¼ΓòæΓò¼├┤Γö£ΓòóΓö¼├║╬ô├╢┬ú╬ô├▓├╣s lead singer Freddie Mercury.', 2018, 134, 'Movie', 0, 'https://m.media-amazon.com/images/M/MV5BMTA2NDc3Njg5NDVeQTJeQWpwZ15BbWU4MDc1NDcxNTUz._V1_.jpg', 'https://youtu.be/WdyFrGMfEkk?si=tvbvDWc06yjJVY2b', 8.0, 'Bryan Singer');
+    ('Bohemian Rhapsody', 'A biographical film about Queen lead singer Freddie Mercury.', 2018, 134, 'Movie', 0, 'https://m.media-amazon.com/images/M/MV5BMTA2NDc3Njg5NDVeQTJeQWpwZ15BbWU4MDc1NDcxNTUz._V1_.jpg', 'https://youtu.be/WdyFrGMfEkk?si=tvbvDWc06yjJVY2b', 8.0, 'Bryan Singer');
 
 -- Insert Base Data
-INSERT INTO CATEGORY (category_id, category_name)
-    VALUES (1, 'Action'),
-    (2, 'Adventure'),
-    (3, 'Comedy'),
-    (4, 'Crime'),
-    (5, 'Drama'),
-    (6, 'Fantasy'),
-    (7, 'Horror'),
-    (8, 'Mystery'),
-    (9, 'Sci-Fi'),
-    (10, 'Thriller');
+INSERT INTO CATEGORY (category_name)
+    VALUES ('Action'),
+    ('Adventure'),
+    ('Comedy'),
+    ('Crime'),
+    ('Drama'),
+    ('Fantasy'),
+    ('Horror'),
+    ('Mystery'),
+    ('Sci-Fi'),
+    ('Thriller');
 
 INSERT INTO CONTENT_CATEGORY (content_id, category_id)
     VALUES (1, 1),
@@ -187,11 +191,11 @@ INSERT INTO CONTENT_CATEGORY (content_id, category_id)
     (30, 6);
 
 INSERT INTO
-LANGUAGE (language_id, language_name)
-    VALUES (1, 'English'),
-    (2, 'French'),
-    (3, 'Japanese'),
-    (4, 'Spanish');
+LANGUAGE (language_name)
+    VALUES ('English'),
+    ('French'),
+    ('Japanese'),
+    ('Spanish');
 
 INSERT INTO CONTENT_LANGUAGE (content_id, language_id)
     VALUES (1, 1),
