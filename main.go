@@ -21,6 +21,7 @@ const (
 )
 
 func main() {
+	fmt.Println("hello from profile branch")
 	// Connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -77,6 +78,10 @@ func main() {
 		return c.SendString("Hello admin")
 	})
 	app.Post("/contents", handlers.CreateContentHandler(db))
+	app.Delete("/contents/:content_id", handlers.DeleteContentHandler(db))
+	app.Put("/contents/:content_id", handlers.UpdateContentHandler(db))
+	app.Get("/users", handlers.GetUsersHandler(db))
+	app.Delete("/users/:user_id", handlers.DeleteUserHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }
