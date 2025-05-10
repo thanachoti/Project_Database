@@ -10,6 +10,7 @@ type User struct {
 	Subscription string    `json:"subscription"`
 	Registration time.Time `json:"registration"`
 	Age          int       `json:"age"`
+	Role         string    `json:"role"`
 	ProfilePic   []byte    `json:"-"`
 }
 

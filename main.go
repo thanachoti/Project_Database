@@ -21,6 +21,7 @@ const (
 )
 
 func main() {
+	fmt.Println("hello from profile branch")
 	// Connection string
 	psqlInfo := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
@@ -43,7 +44,7 @@ func main() {
 
 	app := fiber.New()
 	app.Use(cors.New(cors.Config{
-		AllowOrigins:     "http://localhost:5174",
+		AllowOrigins:     "http://localhost:5173",
 		AllowMethods:     "GET,POST,PUT,DELETE,OPTIONS,PATCH",
 		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
 		AllowCredentials: true,
@@ -56,11 +57,12 @@ func main() {
 	app.Post("/register", handlers.CreateUserHandler(db))
 	app.Post("/login", handlers.LoginUserHandler(db))
 	app.Get("/contents", handlers.GetContentsHandler(db))
+
 	app.Use(auth.JWTMiddleware)
-	app.Put("/users/profile_picture", auth.JWTMiddleware, handlers.UploadProfilePictureHandler(db))
-	app.Get("/users/:user_id", auth.JWTMiddleware, handlers.GetCurrentUserHandler(db))
-	app.Put("/users/:user_id", auth.JWTMiddleware, handlers.UpdateUserProfileHandler(db))
-	app.Post("/users/change-password", auth.JWTMiddleware, handlers.ChangePasswordHandler(db))
+	app.Put("/users/profile_picture", handlers.UploadProfilePictureHandler(db))
+	app.Get("/users/:user_id", handlers.GetCurrentUserHandler(db))
+	app.Put("/users/:user_id", handlers.UpdateUserProfileHandler(db))
+	app.Post("/users/change-password", handlers.ChangePasswordHandler(db))
 	app.Post("/reviews", handlers.CreateReviewHandler(db))
 	app.Get("/reviews/:content_id", handlers.GetReviewByContentIDHandler(db))
 	app.Delete("/reviews/:review_id", handlers.DeleteReviewHandler(db))
@@ -70,6 +72,16 @@ func main() {
 	app.Post("/watch_history", handlers.CreateWatchHistoryHandler(db))
 	app.Get("/watch_history/:user_id", handlers.GetWatchHistoryHandler(db))
 	app.Get("/update_subscription", handlers.UpdateSubscriptionHandler(db))
+
+	app.Use(auth.AdminOnlyMiddleware)
+	app.Get("/hi_admin", func(c *fiber.Ctx) error {
+		return c.SendString("Hello admin")
+	})
+	app.Post("/contents", handlers.CreateContentHandler(db))
+	app.Delete("/contents/:content_id", handlers.DeleteContentHandler(db))
+	app.Put("/contents/:content_id", handlers.UpdateContentHandler(db))
+	app.Get("/users", handlers.GetUsersHandler(db))
+	app.Delete("/users/:user_id", handlers.DeleteUserHandler(db))
 
 	log.Fatal(app.Listen(":8080"))
 }
