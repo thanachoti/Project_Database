@@ -12,7 +12,7 @@ type Content struct {
 	TotalSeasons int
 	ThumbnailURL string
 	VideoURL     string
-	Rating       float64
+	Rating       *float64
 	Director     string
 	Languages    pq.StringArray
 	Subtitles    pq.StringArray

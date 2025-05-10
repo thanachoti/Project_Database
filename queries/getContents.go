@@ -18,12 +18,12 @@ func GetContents(db *sql.DB) ([]object.Content, error) {
     c.total_seasons,
     c.thumbnail_url,
     c.video_url,
-    c.rating,
+    c.average_rating,
     c.director,
     array_remove(array_agg(DISTINCT cl.language_name), NULL) AS languages,
     array_remove(array_agg(DISTINCT sl.language_name), NULL) AS subtitles,
     array_remove(array_agg(DISTINCT cat.category_name), NULL) AS categories
-    FROM CONTENT c
+    FROM CONTENT_WITH_RATING c
     LEFT JOIN CONTENT_LANGUAGE clink ON c.content_id = clink.content_id
     LEFT JOIN LANGUAGE cl ON clink.language_id = cl.language_id
 
@@ -33,7 +33,7 @@ func GetContents(db *sql.DB) ([]object.Content, error) {
     LEFT JOIN CONTENT_CATEGORY catlink ON c.content_id = catlink.content_id
     LEFT JOIN CATEGORY cat ON catlink.category_id = cat.category_id
 
-    GROUP BY c.content_id;
+    GROUP BY c.content_id, c.title, c.description, c.release_year, c.duration, c.content_type, c.total_seasons, c.thumbnail_url, c.video_url, c.average_rating, c.director;
     `
 
 	rows, err := db.Query(query)
