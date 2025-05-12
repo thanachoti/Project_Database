@@ -58,8 +58,8 @@ LANGUAGE (
 
 CREATE TABLE WATCH_HISTORY (
     history_id serial PRIMARY KEY,
-    user_id int REFERENCES "user" (user_id) ON DELETE CASCADE,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    user_id int NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
     watched_timestamp timestamp DEFAULT CURRENT_TIMESTAMP,
     progress timestamp CHECK (progress IS NULL OR progress <= CURRENT_TIMESTAMP),
     language_preference varchar(255),
@@ -69,15 +69,15 @@ CREATE TABLE WATCH_HISTORY (
 
 CREATE TABLE FAVORITE (
     favorite_id serial PRIMARY KEY,
-    user_id int REFERENCES "user" (user_id) ON DELETE CASCADE,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    user_id int NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
     UNIQUE (user_id, content_id)
 );
 
 CREATE TABLE REVIEW (
     review_id serial PRIMARY KEY,
-    user_id int REFERENCES "user" (user_id) ON DELETE CASCADE,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    user_id int NOT NULL REFERENCES "user" (user_id) ON DELETE CASCADE,
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
     rating int CHECK (rating >= 1 AND rating <= 5),
     review_text text,
     review_date timestamp,
@@ -86,23 +86,23 @@ CREATE TABLE REVIEW (
 
 CREATE TABLE CONTENT_CATEGORY (
     content_category_id serial PRIMARY KEY,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
-    category_id int REFERENCES CATEGORY (category_id) ON DELETE CASCADE,
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    category_id int NOT NULL REFERENCES CATEGORY (category_id) ON DELETE CASCADE,
     UNIQUE (content_id, category_id)
 );
 
 CREATE TABLE CONTENT_LANGUAGE (
     id serial PRIMARY KEY,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
-    language_id int REFERENCES
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    language_id int NOT NULL REFERENCES
     LANGUAGE (language_id) ON DELETE CASCADE,
     UNIQUE (content_id, language_id)
 );
 
 CREATE TABLE CONTENT_SUBTITLE (
     id serial PRIMARY KEY,
-    content_id int REFERENCES CONTENT (content_id) ON DELETE CASCADE,
-    language_id int REFERENCES
+    content_id int NOT NULL REFERENCES CONTENT (content_id) ON DELETE CASCADE,
+    language_id int NOT NULL REFERENCES
     LANGUAGE (language_id) ON DELETE CASCADE,
     UNIQUE (content_id, language_id)
 );
